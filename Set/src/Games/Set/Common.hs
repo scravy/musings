@@ -1,53 +1,11 @@
 {-# LANGUAGE Haskell2010 #-}
 
+module Games.Set.Common where
+
+import Games.Set.Card
+import Games.Set.Triplet
+
 import Data.List
-
-data Color = Red | Green | Purple deriving (Eq, Show, Enum, Bounded, Ord)
-data Count = One | Two | Three deriving (Eq, Show, Enum, Bounded, Ord)
-data Shape = Diamond | Squircle | Tilde deriving (Eq, Show, Enum, Bounded, Ord)
-data Fill  = Empty | Hatched | Filled deriving (Eq, Show, Enum, Bounded, Ord)
-
-data Card = Card {
-  color :: Color,
-  count :: Count,
-  shape :: Shape,
-  fill  :: Fill
-} deriving (Eq, Ord)
-
-instance Show Card where
-    show (Card c n s f) = concatMap show [ fromEnum c, fromEnum n, fromEnum s, fromEnum f ]
-
-instance Read Card where
-    readsPrec _ xs
-        | length xs < 4 = []
-        | any (\x -> x < 0 || x > 2) digits = []
-        | otherwise = [ (card, drop 4 xs) ]
-      where
-        card = Card (toEnum c) (toEnum n) (toEnum s) (toEnum f)
-        digits = map (read . (: "")) $ take 4 xs
-        [ c, n, s, f ] = digits
-
-instance Enum Card where
-    toEnum = decodeCard
-    fromEnum = encodeCard
-
-instance Bounded Card where
-    maxBound = toEnum 80
-    minBound = toEnum 0
-
-newtype Triplet = Triplet Int deriving (Eq, Ord)
-
-instance Show Triplet where
-    show = show . fromTriplet
-
-triplet c1 c2 c3 = Triplet $ encodeTriplet (c1', c2', c3')
-  where
-    [ c1', c2', c3' ] = sort [ c1, c2, c3 ]
-
-fromTriplet (Triplet num) = decodeTriplet num
-
-toTriplet (c1, c2, c3) = triplet c1 c2 c3
-
 
 -- checks whether a given triplet is a set
 isSet t = satisfies t color && satisfies t count && satisfies t shape && satisfies t fill 
@@ -59,10 +17,6 @@ isSet t = satisfies t color && satisfies t count && satisfies t shape && satisfi
       where
         allEqual = p1 == p2 && p2 == p3
         allDifferent = p1 /= p2 && p2 /= p3 && p3 /= p1
-
-allValues, twoValues :: (Enum a, Bounded a) => [a]
-allValues = [ minBound .. maxBound ]
-twoValues = take 2 allValues
 
 -- all 3 ^ 4 = 81 cards
 allCards = allValues :: [Card]
@@ -89,10 +43,6 @@ sets :: [Card] -> [Triplet]
 sets cards = uniq [ triplet c1 c2 (missing c1 c2)
                   | c1 <- cards, c2 <- cards, c1 /= c2, missing c1 c2 `elem` cards ]
 
--- sorts and eliminates duplicates, thereby giving a unique representation
-uniq :: (Eq a, Ord a) => [a] -> [a]
-uniq = map head . group . sort
-
 -- determine the third card from two given cards that together form a set
 missing :: Card -> Card -> Card
 missing c1 c2 = Card { color = c, count = n, shape = s, fill = f }
@@ -107,61 +57,6 @@ missing c1 c2 = Card { color = c, count = n, shape = s, fill = f }
 
 numProperties = 4
 base = 3
-
-encodeCard card = sum $ zipWith (*) values powers
-  where
-    values = [
-        fromEnum $ color card,
-        fromEnum $ count card,
-        fromEnum $ shape card,
-        fromEnum $  fill card
-      ]
-    powers = map (base ^) [ 0 .. ]
-
-decodeCard num = card
-  where
-    card = Card {
-      color = toEnum d1,
-      count = toEnum d2,
-      shape = toEnum d3,
-      fill = toEnum d4
-    }
-    [ d1, d2, d3, d4 ] = zipWith decode (replicate numProperties num) powers
-    decode value power = value `rem` (power * base) `quot` power
-    powers = map (base ^) [ 0 .. ]
-
-encodeTriplet (c1, c2, c3) = sum $ zipWith (*) values powers
-  where
-    values = map encodeCard [ c1, c2, c3 ]
-    powers = map (tbase ^) [ 0 .. ]
-    tbase = base ^ numProperties
-
-decodeTriplet num = (decodeCard c1, decodeCard c2, decodeCard c3)
-  where
-    [ c1, c2, c3 ] = zipWith decode (replicate 3 num) powers
-    decode value power = value `rem` (power * tbase) `quot` power
-    powers = map (tbase ^) [ 0 .. ]
-    tbase = base ^ numProperties
-
-
-choose = chooseByTriangle
-
-
-n `chooseByTriangle` k = triangle !! n !! k
-
-triangle = iterate nextRow [1]
-  where
-    nextRow givenRow = 1 : zipWith (+) givenRow (tail givenRow) ++ [1]
-
-
-n `chooseByFaculty` k = faculty n `quot` (faculty k * faculty (n - k))
-
-faculty = product . enumFromTo 1
-
-
-infixr 0 -->
-
-a --> b = (a, b)
 
 sanityChecks = [
 
@@ -248,5 +143,6 @@ main = do
         "<body>"
       ]
     mapM_ (putStrLn . renderCard) allCards
+
 
 
