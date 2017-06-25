@@ -2,11 +2,7 @@
 
 module Games.Set.Card where
 
-
-data Color = Red | Green | Purple deriving (Eq, Show, Enum, Bounded, Ord)
-data Count = One | Two | Three deriving (Eq, Show, Enum, Bounded, Ord)
-data Shape = Diamond | Squircle | Tilde deriving (Eq, Show, Enum, Bounded, Ord)
-data Fill  = Empty | Hatched | Filled deriving (Eq, Show, Enum, Bounded, Ord)
+import Games.Set.Common
 
 data Card = Card {
   color :: Color,
@@ -36,7 +32,7 @@ instance Bounded Card where
     maxBound = toEnum 80
     minBound = toEnum 0
 
-
+encodeCard :: Card -> Int
 encodeCard card = sum $ zipWith (*) values powers
   where
     values = [
@@ -47,6 +43,7 @@ encodeCard card = sum $ zipWith (*) values powers
       ]
     powers = map (base ^) [ 0 .. ]
 
+decodeCard :: Int -> Card
 decodeCard num = card
   where
     card = Card {

@@ -2,10 +2,14 @@
 
 module Games.Set.Triplet (
     Triplet,
-    triplet
+    triplet,
+    fromTriplet
 ) where
 
+import Games.Set.Common
 import Games.Set.Card
+
+import Data.List (sort)
 
 
 newtype Triplet = Triplet Int deriving (Eq, Ord)

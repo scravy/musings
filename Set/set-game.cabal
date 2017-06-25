@@ -16,8 +16,11 @@ extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Games.Set.Card, Games.Set.Common, Games.Set.Triplet, Games.Set.Util
-  -- other-modules:       
+  exposed-modules:     Games.Set.Card,
+                       Games.Set.Common,
+                       Games.Set.Laws,
+                       Games.Set.Triplet,
+                       Games.Set.Util
   other-extensions:    Haskell2010
   build-depends:       base >=4.9 && <4.10
   hs-source-dirs:      src
