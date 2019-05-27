@@ -17,5 +17,6 @@
 1012  2x B dashed diamond
 2001  3x B empty tilde
 2021  3x B filled tilde
+2022  3x B filled diamond
 
 --0212
