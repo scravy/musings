@@ -1,0 +1,21 @@
+0211  1x R dashed tilde
+1221  2x R filled tilde
+1212  2x R dashed diamond
+2212  3x R dashed diamond
+2222  3x R filled diamond
+
+0101  1x G empty tilde
+1110  2x G dashed circle
+1111  2x G dashed tilde
+1122  2x G filled diamond
+2101  3x G empty tilde
+2111  3x G dashed tilde
+2112  3x G dashed diamond
+
+1000  2x B empty circle
+1022  2x B filled diamond
+1012  2x B dashed diamond
+2001  3x B empty tilde
+2021  3x B filled tilde
+
+--0212
